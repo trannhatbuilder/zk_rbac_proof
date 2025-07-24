@@ -57,4 +57,4 @@ template MerkleProof(depth) {
     isValid <== isZero.out;
 }
 
-component main = MerkleProof(2);
+component main = MerkleProof(3);
