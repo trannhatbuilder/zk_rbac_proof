@@ -139,4 +139,4 @@ Contributions are welcome! To contribute:
 For questions or feedback, reach out to [trannhatbuilder](https://github.com/trannhatbuilder).
 
 ---
-Built with ❤️ by [trannhatbuilder](https://github.com/trannhatbuilder)
+&copy; Built with ❤️ by [trannhatbuilder](https://github.com/trannhatbuilder)
