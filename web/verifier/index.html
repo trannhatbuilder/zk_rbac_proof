@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Verifier Page</title>
+  <style>
+    body { font-family: Arial; padding: 2rem; background-color: #f4f4f4; }
+    .container { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 0 10px #ccc; max-width: 500px; margin: auto; }
+    button { padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    .success { color: green; }
+    .error { color: red; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>🔍 Zero-Knowledge Proof Verifier</h2>
+    <form method="POST">
+      <button type="submit">Verify Proof</button>
+    </form>
+    {{ result|safe }}
+  </div>
+</body>
+</html>
