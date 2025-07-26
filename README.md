@@ -2,7 +2,7 @@
 
 A Zero-Knowledge Proof (ZKP) system for Role-Based Access Control (RBAC) using Merkle Trees and Circom. This project allows users to prove their membership in a specific role (e.g., developer, manager) without revealing their identity, leveraging cryptographic techniques for privacy and security.
 
-Xem chi tiết tại đây: [https://github.com/trannhatbuilder/zk_rbac_proof](https://github.com/trannhatbuilder/zk_rbac_proof)
+View detail: [https://github.com/trannhatbuilder/zk_rbac_proof](https://github.com/trannhatbuilder/zk_rbac_proof)
 
 ## 📚 Overview
 
@@ -134,14 +134,9 @@ Contributions are welcome! To contribute:
 4. Push to the branch (`git push origin feature/your-feature`).
 5. Open a Pull Request.
 
-## 📜 License
-
-This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
-
 ## 📬 Contact
 
 For questions or feedback, reach out to [trannhatbuilder](https://github.com/trannhatbuilder).
 
 ---
 Built with ❤️ by [trannhatbuilder](https://github.com/trannhatbuilder)
-```
