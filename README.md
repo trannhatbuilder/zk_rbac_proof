@@ -1,4 +1,4 @@
-# zk_rbac_proof 🌟
+# ZK-RBAC-PROOF 🌟
 
 A Zero-Knowledge Proof (ZKP) system for Role-Based Access Control (RBAC) using Merkle Trees and Circom. This project allows users to prove their membership in a specific role (e.g., developer, manager) without revealing their identity, leveraging cryptographic techniques for privacy and security.
 
