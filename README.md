@@ -59,7 +59,7 @@ Follow these steps to set up the project locally:
 ### Step 1: Generate Input JSON
 Run the Python script to create `input.json` for a user:
 ```bash
-python scripts/generate_input_json.py --email charlie@developer.company.com --secret charlie_secret
+python merkle/generate_input_json.py --email Rubies@it.company.com --secret alpha
 ```
 This generates `inputs/input.json` with:
 - `leaf`: Poseidon hash of email and secret (as string).
@@ -84,7 +84,7 @@ Example `input.json`:
 ### Step 2: Compile the Circom Circuit
 Compile the circuit to generate R1CS and WASM files:
 ```bash
-circom circuits/main.circom --r1cs --wasm --sym
+circom circuits/merkle_proof.circom --r1cs --wasm --sym -o outputs/
 ```
 This creates:
 - `main.r1cs`: Rank-1 Constraint System.
@@ -94,15 +94,15 @@ This creates:
 ### Step 3: Generate Witness
 Generate a witness for the proof using `input.json`:
 ```bash
-node main_js/generate_witness.js main_js/main.wasm inputs/input.json witness.wtns
+node node outputs/merkle_proof_js/generate_witness.js outputs/merkle_proof_js/merkle_proof.wasm inputs/input.json outputs/witness.wtns
 ```
 
 ### Step 4: Generate and Verify Proof
 *(To be implemented)*: Use a ZKP prover (e.g., snarkjs) to generate and verify the proof. Example steps:
 ```bash
-snarkjs groth16 setup main.r1cs powersOfTau28_hez_final_16.ptau main_zkp.zkey
-snarkjs groth16 prove main_zkp.zkey witness.wtns proof.json public.json
-snarkjs groth16 verify verification_key.json public.json proof.json
+snarkjs groth16 setup main.r1cs powersOfTau28_hez_final_16.ptau main_zkp.zkey( I recommend build ptau by hand)
+snarkjs groth16 prove outputs/merkle_proof_final.zkey outputs/witness.wtns outputs/proof.json outputs/public.json
+snarkjs groth16 verify outputs/verification_key.json outputs/public.json outputs/proof.json
 ```
 
 ## 🧠 Theory Behind the Project
