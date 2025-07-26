@@ -10,7 +10,7 @@ sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 # ======== CONFIGURATION ========
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 EMPLOYEE_FOLDER = os.path.join(CURRENT_DIR, "../employees")
-INPUT_FILE = os.path.join(CURRENT_DIR, "../inputs/input.json")  # Ensure correct path when called from Flask
+INPUT_FILE = os.path.join(CURRENT_DIR, "../inputs/input.json")
 REQUIRED_DEPTH = 3
 TOTAL_LEAVES = 2 ** REQUIRED_DEPTH
 
@@ -50,31 +50,50 @@ def extract_role_from_email(email):
         sys.exit(1)
 
 # ======== BUILD MERKLE TREE ========
-def build_merkle_tree(hashed_leaves):
-    current_level = hashed_leaves
+def build_merkle_tree(hashed_leaves, total_leaves):
+    """Build Merkle Tree with proper 0-padding"""
+    # Pad with 0s to reach total_leaves
+    while len(hashed_leaves) < total_leaves:
+        hashed_leaves.append(0)
+    
+    current_level = hashed_leaves.copy()
     tree = [current_level]
+    
     while len(current_level) > 1:
         next_level = []
         for i in range(0, len(current_level), 2):
             left = current_level[i]
-            right = current_level[i + 1] if i + 1 < len(current_level) else left
+            # LUÔN DÙNG 0 CHO NODE THIẾU (KHÔNG LẶP LẠI)
+            right = current_level[i + 1] if i + 1 < len(current_level) else 0
             next_level.append(poseidon_hash_node(left, right))
         tree.append(next_level)
         current_level = next_level
-    return tree, tree[-1][0]
+    
+    return tree, tree[-1][0]  # Return full tree and root
 
 # ======== GENERATE MERKLE PROOF ========
-def generate_merkle_proof(tree, leaf_index):
+def generate_merkle_proof(tree, leaf_index, depth):
+    """Generate Merkle proof with correct sibling handling and order"""
     proof = []
     index = leaf_index
-    for level in tree[:-1]:
+    
+    # Tạo proof theo thứ tự từ lá lên gốc
+    for level in tree[:-1]:  # Exclude root level
         sibling_index = index ^ 1
+        
+        # LUÔN DÙNG 0 CHO SIBLING THIẾU
         if sibling_index < len(level):
             proof.append(level[sibling_index])
         else:
-            proof.append(level[index])  # If no sibling, use itself
+            proof.append(0)
+            
         index //= 2
-    return proof
+    
+    # ĐẢM BẢO ĐỘ DÀI PATH_INDEX = DEPTH (LSB first)
+    path_index = [(leaf_index >> i) & 1 for i in range(depth)]
+    
+    # KHÔNG ĐẢO NGƯỢC PROOF, GIỮ THỨ TỰ TỪ LÁ LÊN GỐC
+    return proof, path_index
 
 # ======== MAIN ========
 def main():
@@ -106,34 +125,26 @@ def main():
 
     # Hash all leaves
     hashed_leaves = [poseidon_hash_leaf(emp["email"], emp["secret"]) for emp in employees]
-    while len(hashed_leaves) < TOTAL_LEAVES:
-        hashed_leaves.append(0)  # Padding with 0 (bigint)
-
-    # Build Merkle Tree
-    tree, root = build_merkle_tree(hashed_leaves)
+    
+    # Build Merkle Tree with proper padding
+    tree, root = build_merkle_tree(hashed_leaves, TOTAL_LEAVES)
 
     leaf = hashed_leaves[index]
-    proof = generate_merkle_proof(tree, index)
-    path_index = [(index >> i) & 1 for i in range(REQUIRED_DEPTH)]
+    proof, path_index = generate_merkle_proof(tree, index, REQUIRED_DEPTH)
 
-    # Write input.json
+    # Write input.json with values as strings
     input_data = {
-        "leaf": leaf,
-        "path_elements": proof,
-        "path_index": path_index,
-        "root": root
+        "leaf": str(leaf),  # Convert to string
+        "path_elements": [str(p) for p in proof],  # Convert each proof element to string
+        "path_index": path_index,  # Keep as integers
+        "root": str(root)  # Convert to string
     }
 
     os.makedirs(os.path.dirname(INPUT_FILE), exist_ok=True)
     with open(INPUT_FILE, "w") as f:
         json.dump(input_data, f, indent=4)
 
-    # Announcements
-    # print(f"✅ input.json has been successfully created.")
-    # print(f"🔍 User: {args.email} (index = {index}) in role `{role}`")
-    # print(f"🌳 Merkle Root: {root}")
+    print(f"🔍 User: {args.email} (index = {index}) in role `{role}`")
 
 if __name__ == "__main__":
     main()
-
-

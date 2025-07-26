@@ -1,4 +1,14 @@
 [
-  { "email": "grace@finance.company.com", "secret": "finS3cur3G1" },
-  { "email": "harry@finance.company.com", "secret": "finS3cur3H2" }
+  {
+    "email": "grace@finance.company.com",
+    "secret": "finS3cur3G1"
+  },
+  {
+    "email": "harry@finance.company.com",
+    "secret": "finS3cur3H2"
+  },
+  {
+    "email": "nhat@finance.company.com",
+    "secret": "nhat@343"
+  }
 ]

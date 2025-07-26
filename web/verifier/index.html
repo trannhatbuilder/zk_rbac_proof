@@ -2,22 +2,258 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Verifier Page</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zero-Knowledge Proof Verifier</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
   <style>
-    body { font-family: Arial; padding: 2rem; background-color: #f4f4f4; }
-    .container { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 0 10px #ccc; max-width: 500px; margin: auto; }
-    button { padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
-    .success { color: green; }
-    .error { color: red; }
+    body {
+        font-family: 'Inter', sans-serif;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: 100vh;
+    }
+
+    .container {
+        max-width: 550px;
+        animation: fadeIn 0.5s ease-out;
+    }
+
+    .card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        overflow: hidden;
+    }
+
+    .card-header {
+        background: linear-gradient(135deg, #6366F1 0%, #4F46E5 100%);
+        padding: 1.5rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .card-header::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 80%);
+        opacity: 0.6;
+    }
+
+    .verify-btn {
+        background: linear-gradient(135deg, #4F46E5 0%, #3730A3 100%);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+    }
+
+    .verify-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 7px 14px rgba(50, 50, 93, 0.1), 0 3px 6px rgba(0, 0, 0, 0.08);
+    }
+
+    .verify-btn:active {
+        transform: translateY(1px);
+    }
+
+    .verify-btn::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 50%);
+        z-index: -1;
+    }
+
+    .result-container {
+        min-height: 100px;
+        transition: all 0.3s ease;
+    }
+
+    .success-icon {
+        background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+    }
+
+    .error-icon {
+        background: linear-gradient(135deg, #EF4444 0%, #B91C1C 100%);
+    }
+
+    .warning-icon {
+        background: linear-gradient(135deg, #F59E0B 0%, #B45309 100%);
+    }
+
+    .loading {
+        display: none;
+        width: 30px;
+        height: 30px;
+        border: 3px solid rgba(79, 70, 229, 0.3);
+        border-radius: 50%;
+        border-top-color: #4F46E5;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        to {
+        transform: rotate(360deg);
+        }
+    }
+
+    @keyframes fadeIn {
+        from {
+        opacity: 0;
+        transform: translateY(10px);
+        }
+        to {
+        opacity: 1;
+        transform: translateY(0);
+        }
+    }
+
+    @keyframes pulse {
+        0%, 100% {
+        opacity: 1;
+        }
+        50% {
+        opacity: 0.7;
+        }
+    }
+
+    .animate-pulse {
+        animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+
+    /* Custom styling for result content from template */
+    .success {
+        color: #10B981;
+        animation: fadeIn 0.5s ease-out;
+    }
+
+    .error {
+        color: #EF4444;
+        animation: fadeIn 0.5s ease-out;
+    }
   </style>
 </head>
-<body>
+<body class="flex items-center justify-center p-6">
   <div class="container">
-    <h2>🔍 Zero-Knowledge Proof Verifier</h2>
-    <form method="POST">
-      <button type="submit">Verify Proof</button>
-    </form>
-    {{ result|safe }}
+    <div class="card">
+      <div class="card-header text-white">
+        <div class="flex items-center">
+          <div class="bg-white bg-opacity-20 rounded-full p-3 mr-4">
+            <i class="fas fa-shield-alt text-white text-xl"></i>
+          </div>
+          <div>
+            <h2 class="text-2xl font-bold">Zero-Knowledge Proof Verifier</h2>
+            <p class="opacity-80 text-sm mt-1">Verify your ZK proof securely and privately</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="p-6">
+        <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6 rounded">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <i class="fas fa-info-circle text-blue-500"></i>
+            </div>
+            <div class="ml-3">
+              <p class="text-sm text-blue-700">
+                Click the button below to verify your proof. The verification is performed securely without revealing any sensitive information.
+              </p>
+            </div>
+          </div>
+        </div>
+        
+        <form method="POST" id="verifyForm">
+          <div class="flex justify-center">
+            <button type="submit" class="verify-btn flex items-center justify-center text-white font-medium py-3 px-8 rounded-lg text-base w-full md:w-auto">
+              <span id="buttonText">Verify Proof</span>
+              <div class="loading ml-3" id="loadingSpinner"></div>
+            </button>
+          </div>
+        </form>
+        
+        <div class="result-container mt-8">
+          <div id="resultPlaceholder" type="hidden">
+            {{ result|safe }}
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="text-center text-gray-600 text-sm mt-6">
+      <p>https://github.com/trannhatbuilder</p>
+    </div>
   </div>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('verifyForm');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const buttonText = document.getElementById('buttonText');
+        
+        // Check if there's already a result being shown
+        const resultContent = document.getElementById('resultPlaceholder');
+        if (resultContent && resultContent.innerHTML.trim()) {
+        // Add proper styling to success/error messages if they exist
+        styleExistingResults();
+        }
+        
+        form.addEventListener('submit', function() {
+        // Show loading state
+        loadingSpinner.style.display = 'block';
+        buttonText.innerText = 'Verifying...';
+        });
+        
+        function styleExistingResults() {
+        // Try to apply enhanced styling to dynamically inserted content
+        const successElements = document.getElementsByClassName('success');
+        const errorElements = document.getElementsByClassName('error');
+        
+        if (successElements.length > 0) {
+            // Enhance success message
+            const successContainer = document.createElement('div');
+            successContainer.className = 'flex items-center p-4 bg-green-50 border-green-200 border rounded-lg animate-fadeIn';
+            successContainer.innerHTML = `
+            <div class="success-icon p-3 rounded-full mr-4">
+                <i class="fas fa-check text-white"></i>
+            </div>
+            <div>${successElements[0].innerHTML}</div>
+            `;
+            
+            // Replace only if we can find a parent
+            if (successElements[0].parentNode) {
+            successElements[0].parentNode.replaceChild(successContainer, successElements[0]);
+            }
+        }
+        
+        if (errorElements.length > 0) {
+            // Enhance error message
+            const errorContainer = document.createElement('div');
+            errorContainer.className = 'flex items-center p-4 bg-red-50 border-red-200 border rounded-lg animate-fadeIn';
+            errorContainer.innerHTML = `
+            <div class="error-icon p-3 rounded-full mr-4">
+                <i class="fas fa-times text-white"></i>
+            </div>
+            <div>${errorElements[0].innerHTML}</div>
+            `;
+            
+            // Replace only if we can find a parent
+            if (errorElements[0].parentNode) {
+            errorElements[0].parentNode.replaceChild(errorContainer, errorElements[0]);
+            }
+        }
+        }
+    });
+  </script>
+
 </body>
 </html>
