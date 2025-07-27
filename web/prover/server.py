@@ -30,25 +30,16 @@ def zk_process():
         script_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../merkle/generate_input_json.py"))
         script_dir = os.path.dirname(script_path)
 
-        try:
-            result = subprocess.run(
-                ["python", script_path, "--email", email, "--secret", secret],
-                cwd=script_dir,
-                capture_output=True,
-                text=True,
-                encoding="utf-8",
-                errors="ignore",
-                check=True
-            )
-            print("✅ generate_input_json.py success")
-            print("STDOUT:", result.stdout)
-            
-        except subprocess.CalledProcessError as e:
-            print("❌ Error calling generate_input_json.py")
-            print("Return code:", e.returncode)
-            print("STDOUT:", e.stdout)
-            print("STDERR:", e.stderr)
-            return render_template_string(html_template + f"<p class='error'>❌ Error in generate_input_json.py:<br><pre>{e.stderr}</pre></p>")
+        subprocess.run(
+            ["python", script_path, "--email", email, "--secret", secret],
+            cwd=script_dir,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="ignore",
+            check=True
+        )
+        result_message += "<p class='message'>✅ Step 1: input.json generated</p>"
 
         # Step 2: Generate witness
         wasm_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../outputs/merkle_proof_js/merkle_proof.wasm"))
@@ -61,6 +52,7 @@ def zk_process():
             "--input", input_path,
             "--witness", witness_path
         ], check=True, text=True, encoding="utf-8", errors="ignore")
+        result_message += "<p class='message'>✅ Step 2: witness.wtns generated</p>"
 
         # Step 3: Generate proof
         zkey_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../outputs/merkle_proof_final.zkey"))
@@ -74,13 +66,28 @@ def zk_process():
             proof_path,
             public_path
         ], check=True, text=True, encoding="utf-8", errors="ignore")
+        result_message += "<p class='message'>✅ Step 3: proof.json and public.json generated</p>"
 
-        result_message = "<p class='message'>✅ Proof generated successfully!</p>"
+        # Step 4: Verify proof
+        vkey_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../outputs/verification_key.json"))
+
+        result_verify = subprocess.run([
+            "snarkjs.cmd", "groth16", "verify",
+            vkey_path,
+            public_path,
+            proof_path
+        ], capture_output=True, text=True)
+
+        if "OK" in result_verify.stdout:
+            result_message += "<p class='message'>✅ Step 4: Verification successful!</p>"
+        else:
+            result_message += f"<p class='error'>❌ Step 4: Invalid Proof. Access denied.<br><pre>{result_verify.stdout}</pre></p>"
 
     except subprocess.CalledProcessError as e:
-        result_message = f"<p class='error'>❌ Error during ZK process:<br><pre>{e.stderr or str(e)}</pre></p>"
+        result_message += f"<p class='error'>❌ Error during ZK process:<br><pre>{e.stderr or str(e)}</pre></p>"
 
     return render_template_string(html_template + result_message)
+
 
 if __name__ == "__main__":
     app.run(debug=True)
