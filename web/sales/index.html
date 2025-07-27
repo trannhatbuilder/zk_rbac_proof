@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f7fafc;
+        }
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+        .sidebar {
+            width: 250px;
+            background-color: #1a56db;
+            color: white;
+            transition: all 0.3s;
+        }
+        .main-content {
+            flex: 1;
+            padding: 20px;
+        }
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .card-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid #e5e7eb;
+            font-weight: 600;
+        }
+        .card-body {
+            padding: 20px;
+        }
+        .stat-card {
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            height: 100%;
+        }
+        .stat-card .icon {
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+        .stat-card .value {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        .stat-card .label {
+            font-size: 14px;
+            color: #6b7280;
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+        .progress-container {
+            height: 10px;
+            background-color: #e5e7eb;
+            border-radius: 5px;
+            margin-top: 8px;
+        }
+        .progress-bar {
+            height: 10px;
+            border-radius: 5px;
+        }
+        .table-responsive {
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th {
+            text-align: left;
+            padding: 12px 15px;
+            border-bottom: 1px solid #e5e7eb;
+            font-weight: 600;
+        }
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar Navigation -->
+        <div class="sidebar">
+            <div class="p-5">
+                <h2 class="text-xl font-bold mb-6">Sales Dashboard</h2>
+                <nav>
+                    <ul>
+                        <li class="mb-4">
+                            <a href="#overview" class="flex items-center text-white hover:bg-blue-700 px-4 py-2 rounded">
+                                <i class="fas fa-chart-line mr-3"></i>
+                                Overview
+                            </a>
+                        </li>
+                        <li class="mb-4">
+                            <a href="#sales" class="flex items-center text-white hover:bg-blue-700 px-4 py-2 rounded">
+                                <i class="fas fa-dollar-sign mr-3"></i>
+                                Sales Performance
+                            </a>
+                        </li>
+                        <li class="mb-4">
+                            <a href="#customers" class="flex items-center text-white hover:bg-blue-700 px-4 py-2 rounded">
+                                <i class="fas fa-users mr-3"></i>
+                                Customer Acquisition
+                            </a>
+                        </li>
+                        <li class="mb-4">
+                            <a href="#products" class="flex items-center text-white hover:bg-blue-700 px-4 py-2 rounded">
+                                <i class="fas fa-box mr-3"></i>
+                                Product Performance
+                            </a>
+                        </li>
+                        <li class="mb-4">
+                            <a href="#team" class="flex items-center text-white hover:bg-blue-700 px-4 py-2 rounded">
+                                <i class="fas fa-user-friends mr-3"></i>
+                                Team Performance
+                            </a>
+                        </li>
+                        <li class="mb-4">
+                            <a href="#forecasts" class="flex items-center text-white hover:bg-blue-700 px-4 py-2 rounded">
+                                <i class="fas fa-chart-area mr-3"></i>
+                                Forecasts
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <header class="mb-6">
+                <h1 class="text-2xl font-bold text-gray-800">Sales Analytics</h1>
+                <p class="text-gray-600">Welcome back! Here's what's happening with your sales today.</p>
+            </header>
+
+            <!-- Sales Overview Section -->
+            <section id="overview" class="mb-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Total Revenue -->
+                    <div class="card">
+                        <div class="stat-card bg-gradient-to-r from-blue-50 to-blue-100">
+                            <div class="icon text-blue-500">
+                                <i class="fas fa-dollar-sign"></i>
+                            </div>
+                            <div class="value text-blue-700">$124,563</div>
+                            <div class="label">Total Revenue</div>
+                            <div class="mt-2 flex items-center">
+                                <span class="text-green-500 mr-1"><i class="fas fa-arrow-up"></i> 12.5%</span>
+                                <span class="text-xs text-gray-500">from last month</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Total Orders -->
+                    <div class="card">
+                        <div class="stat-card bg-gradient-to-r from-green-50 to-green-100">
+                            <div class="icon text-green-500">
+                                <i class="fas fa-shopping-cart"></i>
+                            </div>
+                            <div class="value text-green-700">1,432</div>
+                            <div class="label">Total Orders</div>
+                            <div class="mt-2 flex items-center">
+                                <span class="text-green-500 mr-1"><i class="fas fa-arrow-up"></i> 8.2%</span>
+                                <span class="text-xs text-gray-500">from last month</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- New Customers -->
+                    <div class="card">
+                        <div class="stat-card bg-gradient-to-r from-purple-50 to-purple-100">
+                            <div class="icon text-purple-500">
+                                <i class="fas fa-user-plus"></i>
+                            </div>
+                            <div class="value text-purple-700">358</div>
+                            <div class="label">New Customers</div>
+                            <div class="mt-2 flex items-center">
+                                <span class="text-green-500 mr-1"><i class="fas fa-arrow-up"></i> 4.3%</span>
+                                <span class="text-xs text-gray-500">from last month</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Conversion Rate -->
+                    <div class="card">
+                        <div class="stat-card bg-gradient-to-r from-yellow-50 to-yellow-100">
+                            <div class="icon text-yellow-500">
+                                <i class="fas fa-chart-pie"></i>
+                            </div>
+                            <div class="value text-yellow-700">24.8%</div>
+                            <div class="label">Conversion Rate</div>
+                            <div class="mt-2 flex items-center">
+                                <span class="text-red-500 mr-1"><i class="fas fa-arrow-down"></i> 1.5%</span>
+                                <span class="text-xs text-gray-500">from last month</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sales Performance Section -->
+            <section id="sales" class="mb-8">
+                <div class="card">
+                    <div class="card-header flex justify-between items-center">
+                        <h3 class="text-lg font-semibold">Sales Performance</h3>
+                        <div class="flex space-x-2">
+                            <button class="px-3 py-1 bg-blue-100 text-blue-700 rounded-md text-sm">Daily</button>
+                            <button class="px-3 py-1 bg-blue-600 text-white rounded-md text-sm">Weekly</button>
+                            <button class="px-3 py-1 bg-blue-100 text-blue-700 rounded-md text-sm">Monthly</button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="salesChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Customer Acquisition & Product Performance -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <!-- Customer Acquisition -->
+                <section id="customers" class="card">
+                    <div class="card-header">
+                        <h3 class="text-lg font-semibold">Customer Acquisition</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container" style="height: 250px;">
+                            <canvas id="customerChart"></canvas>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Product Performance -->
+                <section id="products" class="card">
+                    <div class="card-header">
+                        <h3 class="text-lg font-semibold">Product Performance</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container" style="height: 250px;">
+                            <canvas id="productChart"></canvas>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Team Performance -->
+            <section id="team" class="mb-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="text-lg font-semibold">Sales Team Performance</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="grid grid-cols-1 gap-4">
+                            <!-- Team Member 1 -->
+                            <div class="flex justify-between items-center">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold mr-3">JD</div>
+                                    <div>
+                                        <h4 class="font-medium">John Doe</h4>
+                                        <p class="text-sm text-gray-500">Sales Executive</p>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-lg font-semibold">$24,500</div>
+                                    <div class="text-sm text-gray-500">Monthly Sales</div>
+                                </div>
+                                <div class="w-1/3">
+                                    <div class="flex justify-between text-sm">
+                                        <span>Target: $30,000</span>
+                                        <span>82%</span>
+                                    </div>
+                                    <div class="progress-container">
+                                        <div class="progress-bar bg-blue-500" style="width: 82%"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Team Member 2 -->
+                            <div class="flex justify-between items-center">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center text-white font-bold mr-3">AS</div>
+                                    <div>
+                                        <h4 class="font-medium">Anna Smith</h4>
+                                        <p class="text-sm text-gray-500">Sales Manager</p>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-lg font-semibold">$32,450</div>
+                                    <div class="text-sm text-gray-500">Monthly Sales</div>
+                                </div>
+                                <div class="w-1/3">
+                                    <div class="flex justify-between text-sm">
+                                        <span>Target: $35,000</span>
+                                        <span>93%</span>
+                                    </div>
+                                    <div class="progress-container">
+                                        <div class="progress-bar bg-green-500" style="width: 93%"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Team Member 3 -->
+                            <div class="flex justify-between items-center">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 rounded-full bg-purple-500 flex items-center justify-center text-white font-bold mr-3">RJ</div>
+                                    <div>
+                                        <h4 class="font-medium">Robert Johnson</h4>
+                                        <p class="text-sm text-gray-500">Sales Representative</p>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-lg font-semibold">$18,750</div>
+                                    <div class="text-sm text-gray-500">Monthly Sales</div>
+                                </div>
+                                <div class="w-1/3">
+                                    <div class="flex justify-between text-sm">
+                                        <span>Target: $25,000</span>
+                                        <span>75%</span>
+                                    </div>
+                                    <div class="progress-container">
+                                        <div class="progress-bar bg-purple-500" style="width: 75%"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Team Member 4 -->
+                            <div class="flex justify-between items-center">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 rounded-full bg-yellow-500 flex items-center justify-center text-white font-bold mr-3">EL</div>
+                                    <div>
+                                        <h4 class="font-medium">Emily Lee</h4>
+                                        <p class="text-sm text-gray-500">Sales Representative</p>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-lg font-semibold">$21,200</div>
+                                    <div class="text-sm text-gray-500">Monthly Sales</div>
+                                </div>
+                                <div class="w-1/3">
+                                    <div class="flex justify-between text-sm">
+                                        <span>Target: $20,000</span>
+                                        <span>106%</span>
+                                    </div>
+                                    <div class="progress-container">
+                                        <div class="progress-bar bg-yellow-500" style="width: 100%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            <!-- Recent Sales & Forecasts -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <!-- Recent Sales -->
+                <section class="card">
+                    <div class="card-header">
+                        <h3 class="text-lg font-semibold">Recent Sales</h3>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Customer</th>
+                                        <th>Product</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="flex items-center">
+                                            <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-500 font-bold mr-2">AC</div>
+                                            <div>Acme Corp</div>
+                                        </td>
+                                        <td>Premium Package</td>
+                                        <td>$5,600</td>
+                                        <td><span class="status-badge bg-green-100 text-green-700">Completed</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="flex items-center">
+                                            <div class="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-500 font-bold mr-2">GI</div>
+                                            <div>Global Industries</div>
+                                        </td>
+                                        <td>Basic Subscription</td>
+                                        <td>$1,200</td>
+                                        <td><span class="status-badge bg-blue-100 text-blue-700">Processing</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="flex items-center">
+                                            <div class="w-8 h-8 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-500 font-bold mr-2">TS</div>
+                                            <div>Tech Solutions</div>
+                                        </td>
+                                        <td>Enterprise Plan</td>
+                                        <td>$12,350</td>
+                                        <td><span class="status-badge bg-green-100 text-green-700">Completed</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="flex items-center">
+                                            <div class="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center text-red-500 font-bold mr-2">RB</div>
+                                            <div>Retail Brothers</div>
+                                        </td>
+                                        <td>Custom Solution</td>
+                                        <td>$8,450</td>
+                                        <td><span class="status-badge bg-yellow-100 text-yellow-700">Pending</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="flex items-center">
+                                            <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-500 font-bold mr-2">EC</div>
+                                            <div>Eco Consultants</div>
+                                        </td>
+                                        <td>Advanced Package</td>
+                                        <td>$3,800</td>
+                                        <td><span class="status-badge bg-green-100 text-green-700">Completed</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Sales Forecasts -->
+                <section id="forecasts" class="card">
+                    <div class="card-header">
+                        <h3 class="text-lg font-semibold">Sales Forecast</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container" style="height: 250px;">
+                            <canvas id="forecastChart"></canvas>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize charts when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Sales Performance Chart
+            const salesCtx = document.getElementById('salesChart').getContext('2d');
+            const salesChart = new Chart(salesCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                    datasets: [{
+                        label: 'Current Year',
+                        data: [18500, 22000, 19500, 24000, 25500, 27000, 28500, 30000, 32000, 33500, 34800, 37000],
+                        borderColor: '#1a56db',
+                        backgroundColor: 'rgba(26, 86, 219, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4
+                    }, {
+                        label: 'Previous Year',
+                        data: [15000, 17000, 16500, 19000, 20500, 21000, 22000, 24000, 25000, 27500, 28000, 29500],
+                        borderColor: '#9ca3af',
+                        backgroundColor: 'rgba(156, 163, 175, 0.1)',
+                        borderWidth: 2,
+                        borderDash: [5, 5],
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value.toLocaleString();
+                                }
+                            }
+                        }
+                    },
+                    interaction: {
+                        mode: 'nearest',
+                        axis: 'x',
+                        intersect: false
+                    }
+                }
+            });
+
+            // Customer Acquisition Chart
+            const customerCtx = document.getElementById('customerChart').getContext('2d');
+            const customerChart = new Chart(customerCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'New Customers',
+                        data: [120, 135, 95, 105, 140, 150],
+                        backgroundColor: '#8b5cf6',
+                    }, {
+                        label: 'Returning Customers',
+                        data: [85, 90, 75, 95, 110, 120],
+                        backgroundColor: '#c4b5fd',
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            stacked: true
+                        },
+                        x: {
+                            stacked: true
+                        }
+                    }
+                }
+            });
+
+            // Product Performance Chart
+            const productCtx = document.getElementById('productChart').getContext('2d');
+            const productChart = new Chart(productCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Premium Package', 'Basic Subscription', 'Enterprise Plan', 'Custom Solution', 'Advanced Package'],
+                    datasets: [{
+                        data: [35, 20, 25, 10, 10],
+                        backgroundColor: ['#1a56db', '#7e3af2', '#f05252', '#ff5a1f', '#0694a2'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                        }
+                    },
+                    cutout: '65%'
+                }
+            });
+
+            // Forecast Chart
+            const forecastCtx = document.getElementById('forecastChart').getContext('2d');
+            const forecastChart = new Chart(forecastCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Actual',
+                        data: [18500, 22000, 19500, 24000, 25500, 27000],
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4
+                    }, {
+                        label: 'Forecast',
+                        data: [27000, 29000, 31000, 33000, 35000, 37000],
+                        borderColor: '#f59e0b',
+                        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                        borderWidth: 2,
+                        borderDash: [5, 5],
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value.toLocaleString();
+                                }
+                            }
+                        }
+                    },
+                    interaction: {
+                        mode: 'nearest',
+                        axis: 'x',
+                        intersect: false
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

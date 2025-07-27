@@ -1,14 +1,15 @@
-from flask import Flask, request, render_template_string
+from flask import Flask, request, render_template_string, redirect, session
 import subprocess
 import os
 import sys
 
-# Đảm bảo terminal hiển thị đúng UTF-8
 sys.stdout.reconfigure(encoding='utf-8')
-
 app = Flask(__name__)
 
-# Load HTML template
+app.secret_key = os.urandom(24)
+
+
+# Load template HTML
 html_path = os.path.join(os.path.dirname(__file__), "index.html")
 with open(html_path, "r", encoding="utf-8") as f:
     html_template = f.read()
@@ -16,8 +17,15 @@ with open(html_path, "r", encoding="utf-8") as f:
 @app.route("/", methods=["GET", "POST"])
 def zk_process():
     if request.method == "GET":
-        return render_template_string(html_template)
+        status = request.args.get("status")
+        message = ""
+        if status == "success":
+            message = "<p class='message'>✅ input.json generated successfully!</p>"
+        elif status == "error":
+            message = "<p class='error'>❌ Invalid email or secret!</p>"
+        return render_template_string(html_template + message)
 
+    # POST
     email = request.form.get("email")
     secret = request.form.get("secret")
     result_message = ""
@@ -26,7 +34,7 @@ def zk_process():
         return render_template_string(html_template + '<p class="error">❌ Invalid email format.</p>')
 
     try:
-        # Step 1: Run generate_input_json.py
+        # Step 1: Generate input.json
         script_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../merkle/generate_input_json.py"))
         script_dir = os.path.dirname(script_path)
 
@@ -41,6 +49,11 @@ def zk_process():
         )
         result_message += "<p class='message'>✅ Step 1: input.json generated</p>"
 
+    except subprocess.CalledProcessError:
+        # Nếu input.json lỗi → redirect về kèm thông báo
+        return redirect("/?status=error")
+
+    try:
         # Step 2: Generate witness
         wasm_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../outputs/merkle_proof_js/merkle_proof.wasm"))
         input_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../inputs/input.json"))
@@ -80,6 +93,10 @@ def zk_process():
 
         if "OK" in result_verify.stdout:
             result_message += "<p class='message'>✅ Step 4: Verification successful!</p>"
+            
+            department = email.split('@')[1].split('.')[0].lower()
+            session['department'] = department
+            return redirect(f"/{department}/")
         else:
             result_message += f"<p class='error'>❌ Step 4: Invalid Proof. Access denied.<br><pre>{result_verify.stdout}</pre></p>"
 
@@ -87,6 +104,28 @@ def zk_process():
         result_message += f"<p class='error'>❌ Error during ZK process:<br><pre>{e.stderr or str(e)}</pre></p>"
 
     return render_template_string(html_template + result_message)
+
+
+@app.route("/<dept>/")
+def dashboard(dept):
+    dept = dept.lower()
+    valid_depts = ["it", "hr", "sales", "finance"]
+
+    if dept not in valid_depts:
+        return "❌ Invalid department", 404
+
+    if session.get("department") != dept:
+        return "❌ Access Denied: You are not authorized to view this dashboard.", 403
+
+    
+    index_path = os.path.join(os.path.dirname(__file__), f"../{dept}/index.html")
+    if not os.path.exists(index_path):
+        return f"❌ index.html not found in {dept}/", 404
+
+    with open(index_path, "r", encoding="utf-8") as f:
+        content = f.read()
+    return render_template_string(content)
+
 
 
 if __name__ == "__main__":

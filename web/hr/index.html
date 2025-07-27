@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR Dashboard - Quản lý Nhân sự Chuyên nghiệp</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #4f46e5;
+            --secondary-color: #f97316;
+            --success-color: #22c55e;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+            --info-color: #3b82f6;
+            --light-color: #f9fafb;
+            --dark-color: #1f2937;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8fafc;
+        }
+        
+        .dashboard-card {
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .metric-card {
+            border-left: 4px solid transparent;
+        }
+        
+        .metric-employees {
+            border-left-color: var(--primary-color);
+        }
+        
+        .metric-turnover {
+            border-left-color: var(--danger-color);
+        }
+        
+        .metric-recruitment {
+            border-left-color: var(--success-color);
+        }
+        
+        .metric-training {
+            border-left-color: var(--warning-color);
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+
+        .progress-bar {
+            height: 8px;
+            border-radius: 4px;
+            background-color: #e5e7eb;
+            overflow: hidden;
+        }
+        
+        .progress-bar-fill {
+            height: 100%;
+            border-radius: 4px;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        @media print {
+            .dashboard-card {
+                break-inside: avoid;
+            }
+        }
+        
+        /* Custom styles for sidebar */
+        .sidebar {
+            background: linear-gradient(180deg, var(--primary-color) 0%, #3730a3 100%);
+        }
+        
+        /* Pulse animation for indicators */
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.7);
+            }
+            
+            70% {
+                transform: scale(1);
+                box-shadow: 0 0 0 10px rgba(79, 70, 229, 0);
+            }
+            
+            100% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(79, 70, 229, 0);
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="flex flex-col lg:flex-row min-h-screen">
+        <!-- Sidebar -->
+        <div class="sidebar text-white w-full lg:w-64 p-4 flex flex-col">
+            <div class="text-2xl font-bold mb-8 flex items-center justify-center lg:justify-start p-2">
+                <i class="fas fa-chart-line mr-3"></i>
+                <span>HR Analytics</span>
+            </div>
+            
+            <nav class="flex-grow">
+                <ul class="space-y-2">
+                    <li class="bg-white bg-opacity-20 rounded-md">
+                        <a href="#" class="flex items-center px-4 py-3 rounded-md">
+                            <i class="fas fa-tachometer-alt mr-3"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center px-4 py-3 rounded-md hover:bg-white hover:bg-opacity-10">
+                            <i class="fas fa-users mr-3"></i>
+                            <span>Nhân sự</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center px-4 py-3 rounded-md hover:bg-white hover:bg-opacity-10">
+                            <i class="fas fa-user-plus mr-3"></i>
+                            <span>Tuyển dụng</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center px-4 py-3 rounded-md hover:bg-white hover:bg-opacity-10">
+                            <i class="fas fa-graduation-cap mr-3"></i>
+                            <span>Đào tạo</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center px-4 py-3 rounded-md hover:bg-white hover:bg-opacity-10">
+                            <i class="fas fa-money-bill-wave mr-3"></i>
+                            <span>Lương & Phúc lợi</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center px-4 py-3 rounded-md hover:bg-white hover:bg-opacity-10">
+                            <i class="fas fa-chart-bar mr-3"></i>
+                            <span>Hiệu suất</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center px-4 py-3 rounded-md hover:bg-white hover:bg-opacity-10">
+                            <i class="fas fa-cog mr-3"></i>
+                            <span>Cài đặt</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <div class="mt-auto pt-4 border-t border-white border-opacity-20">
+                <a href="#" class="flex items-center px-4 py-3 rounded-md hover:bg-white hover:bg-opacity-10">
+                    <i class="fas fa-sign-out-alt mr-3"></i>
+                    <span>Đăng xuất</span>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="flex-grow p-6">
+            <!-- Header -->
+            <div class="flex flex-col sm:flex-row justify-between items-center mb-8">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-800">HR Dashboard</h1>
+                    <p class="text-gray-500">Tổng quan quản lý nhân sự tháng 6/2023</p>
+                </div>
+                
+                <div class="flex items-center mt-4 sm:mt-0">
+                    <div class="relative mr-4">
+                        <input type="text" placeholder="Tìm kiếm..." class="pl-10 pr-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                    </div>
+                    <div class="relative">
+                        <button class="flex items-center justify-center w-10 h-10 rounded-full bg-indigo-100 text-indigo-600 relative">
+                            <i class="fas fa-bell"></i>
+                            <span class="absolute top-1 right-1 w-3 h-3 bg-red-500 rounded-full pulse"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- KPI Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="dashboard-card bg-white p-6 metric-card metric-employees">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-gray-500 text-sm font-medium">Tổng nhân viên</p>
+                            <h3 class="text-3xl font-bold text-gray-800 my-1">458</h3>
+                            <p class="text-sm text-green-500"><i class="fas fa-arrow-up mr-1"></i> +2.5% so với tháng trước</p>
+                        </div>
+                        <div class="rounded-full bg-indigo-100 p-3">
+                            <i class="fas fa-users text-indigo-600 text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <div class="flex justify-between text-xs text-gray-500 mb-1">
+                            <span>Tiến độ tháng</span>
+                            <span>75%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-bar-fill bg-indigo-600" style="width: 75%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="dashboard-card bg-white p-6 metric-card metric-turnover">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-gray-500 text-sm font-medium">Tỷ lệ nghỉ việc</p>
+                            <h3 class="text-3xl font-bold text-gray-800 my-1">3.2%</h3>
+                            <p class="text-sm text-red-500"><i class="fas fa-arrow-up mr-1"></i> +0.8% so với tháng trước</p>
+                        </div>
+                        <div class="rounded-full bg-red-100 p-3">
+                            <i class="fas fa-user-minus text-red-600 text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <div class="flex justify-between text-xs text-gray-500 mb-1">
+                            <span>Mục tiêu (<3%)</span>
+                            <span>107%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-bar-fill bg-red-500" style="width: 100%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="dashboard-card bg-white p-6 metric-card metric-recruitment">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-gray-500 text-sm font-medium">Tuyển dụng mới</p>
+                            <h3 class="text-3xl font-bold text-gray-800 my-1">28</h3>
+                            <p class="text-sm text-green-500"><i class="fas fa-arrow-up mr-1"></i> +12% so với tháng trước</p>
+                        </div>
+                        <div class="rounded-full bg-green-100 p-3">
+                            <i class="fas fa-user-plus text-green-600 text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <div class="flex justify-between text-xs text-gray-500 mb-1">
+                            <span>Tiến độ tháng</span>
+                            <span>85%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-bar-fill bg-green-500" style="width: 85%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="dashboard-card bg-white p-6 metric-card metric-training">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-gray-500 text-sm font-medium">Chi phí đào tạo</p>
+                            <h3 class="text-3xl font-bold text-gray-800 my-1">125tr</h3>
+                            <p class="text-sm text-yellow-500"><i class="fas fa-equals mr-1"></i> Không đổi so với tháng trước</p>
+                        </div>
+                        <div class="rounded-full bg-yellow-100 p-3">
+                            <i class="fas fa-graduation-cap text-yellow-600 text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <div class="flex justify-between text-xs text-gray-500 mb-1">
+                            <span>Ngân sách</span>
+                            <span>62%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-bar-fill bg-yellow-500" style="width: 62%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Charts Section -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <!-- Employee Distribution Chart -->
+                <div class="dashboard-card bg-white p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-bold text-gray-700">Phân bố nhân sự theo phòng ban</h3>
+                        <div class="flex space-x-2">
+                            <button class="px-3 py-1 text-xs rounded bg-gray-100 text-gray-800">Tuần</button>
+                            <button class="px-3 py-1 text-xs rounded bg-indigo-100 text-indigo-800">Tháng</button>
+                            <button class="px-3 py-1 text-xs rounded bg-gray-100 text-gray-800">Năm</button>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="departmentChart"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Turnover Trends Chart -->
+                <div class="dashboard-card bg-white p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-bold text-gray-700">Xu hướng nhân sự (6 tháng gần nhất)</h3>
+                        <div>
+                            <select class="text-sm border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                                <option>Tất cả phòng ban</option>
+                                <option>Kỹ thuật</option>
+                                <option>Kinh doanh</option>
+                                <option>Marketing</option>
+                                <option>Nhân sự</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="turnoverChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recruitment and Performance Section -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                <!-- Hiring Progress -->
+                <div class="dashboard-card bg-white p-6">
+                    <h3 class="font-bold text-gray-700 mb-4">Tiến độ tuyển dụng</h3>
+                    
+                    <div class="space-y-5">
+                        <div>
+                            <div class="flex justify-between text-sm mb-1">
+                                <span class="font-medium">Kỹ sư phần mềm</span>
+                                <span class="text-indigo-600 font-medium">8/12</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-bar-fill bg-indigo-600" style="width: 66%"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between text-sm mb-1">
+                                <span class="font-medium">Chuyên viên Marketing</span>
+                                <span class="text-indigo-600 font-medium">4/5</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-bar-fill bg-indigo-600" style="width: 80%"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between text-sm mb-1">
+                                <span class="font-medium">Nhân viên kinh doanh</span>
+                                <span class="text-indigo-600 font-medium">12/15</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-bar-fill bg-indigo-600" style="width: 80%"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between text-sm mb-1">
+                                <span class="font-medium">Kế toán</span>
+                                <span class="text-indigo-600 font-medium">2/3</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-bar-fill bg-indigo-600" style="width: 67%"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between text-sm mb-1">
+                                <span class="font-medium">Chuyên viên CSKH</span>
+                                <span class="text-indigo-600 font-medium">2/8</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-bar-fill bg-indigo-600" style="width: 25%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Performance Distribution Chart -->
+                <div class="dashboard-card bg-white p-6">
+                    <h3 class="font-bold text-gray-700 mb-4">Phân bố hiệu suất</h3>
+                    <div class="chart-container">
+                        <canvas id="performanceChart"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Top Performers -->
+                <div class="dashboard-card bg-white p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-bold text-gray-700">Top nhân viên xuất sắc</h3>
+                        <button class="text-indigo-600 text-sm font-medium">Xem tất cả</button>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-center p-3 bg-gray-50 rounded-lg">
+                            <div class="w-10 h-10 rounded-full bg-indigo-200 flex items-center justify-center text-indigo-700 font-bold mr-3">NT</div>
+                            <div class="flex-grow">
+                                <h4 class="text-sm font-medium">Nguyễn Thành</h4>
+                                <p class="text-xs text-gray-500">Trưởng nhóm Phát triển</p>
+                            </div>
+                            <div class="bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded">98%</div>
+                        </div>
+                        
+                        <div class="flex items-center p-3 bg-gray-50 rounded-lg">
+                            <div class="w-10 h-10 rounded-full bg-indigo-200 flex items-center justify-center text-indigo-700 font-bold mr-3">TM</div>
+                            <div class="flex-grow">
+                                <h4 class="text-sm font-medium">Trần Mai</h4>
+                                <p class="text-xs text-gray-500">Giám đốc Kinh doanh</p>
+                            </div>
+                            <div class="bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded">96%</div>
+                        </div>
+                        
+                        <div class="flex items-center p-3 bg-gray-50 rounded-lg">
+                            <div class="w-10 h-10 rounded-full bg-indigo-200 flex items-center justify-center text-indigo-700 font-bold mr-3">VH</div>
+                            <div class="flex-grow">
+                                <h4 class="text-sm font-medium">Vũ Hoàng</h4>
+                                <p class="text-xs text-gray-500">Chuyên viên Marketing</p>
+                            </div>
+                            <div class="bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded">95%</div>
+                        </div>
+                        
+                        <div class="flex items-center p-3 bg-gray-50 rounded-lg">
+                            <div class="w-10 h-10 rounded-full bg-indigo-200 flex items-center justify-center text-indigo-700 font-bold mr-3">LP</div>
+                            <div class="flex-grow">
+                                <h4 class="text-sm font-medium">Lê Phương</h4>
+                                <p class="text-xs text-gray-500">Nhân viên CSKH</p>
+                            </div>
+                            <div class="bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded">94%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Training and Benefits Section -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <!-- Training Chart -->
+                <div class="dashboard-card bg-white p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-bold text-gray-700">Chi phí đào tạo theo phòng ban</h3>
+                        <button class="text-indigo-600 text-sm font-medium">Quý 2/2023</button>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="trainingChart"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Recent Training Events -->
+                <div class="dashboard-card bg-white p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-bold text-gray-700">Khóa đào tạo gần đây</h3>
+                        <button class="text-indigo-600 text-sm font-medium">Xem lịch đầy đủ</button>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div class="flex p-3 border-l-4 border-green-500 bg-gray-50">
+                            <div class="mr-4">
+                                <div class="text-sm font-medium">20</div>
+                                <div class="text-xs text-gray-500">Tháng 6</div>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-medium">Kỹ năng lãnh đạo trong kỷ nguyên số</h4>
+                                <p class="text-xs text-gray-500">09:00 - 17:00 • 25 người tham gia</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex p-3 border-l-4 border-yellow-500 bg-gray-50">
+                            <div class="mr-4">
+                                <div class="text-sm font-medium">15</div>
+                                <div class="text-xs text-gray-500">Tháng 6</div>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-medium">Agile & Scrum cơ bản</h4>
+                                <p class="text-xs text-gray-500">13:30 - 17:00 • 40 người tham gia</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex p-3 border-l-4 border-indigo-500 bg-gray-50">
+                            <div class="mr-4">
+                                <div class="text-sm font-medium">10</div>
+                                <div class="text-xs text-gray-500">Tháng 6</div>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-medium">Phân tích dữ liệu với Python</h4>
+                                <p class="text-xs text-gray-500">09:00 - 16:00 • 15 người tham gia</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex p-3 border-l-4 border-red-500 bg-gray-50">
+                            <div class="mr-4">
+                                <div class="text-sm font-medium">5</div>
+                                <div class="text-xs text-gray-500">Tháng 6</div>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-medium">Kỹ năng bán hàng và CSKH</h4>
+                                <p class="text-xs text-gray-500">08:30 - 17:00 • 22 người tham gia</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Compensation Table -->
+            <div class="dashboard-card bg-white p-6 mb-8">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-bold text-gray-700">Bảng lương & phúc lợi theo phòng ban</h3>
+                    <div>
+                        <select class="text-sm border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                            <option>Quý 2/2023</option>
+                            <option>Quý 1/2023</option>
+                            <option>Quý 4/2022</option>
+                            <option>Quý 3/2022</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="table-container">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phòng ban</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Số lượng</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Lương TB (Tr.đ)</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thưởng TB (Tr.đ)</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phúc lợi (Tr.đ)</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tổng chi phí (Tr.đ)</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="font-medium text-gray-900">Kỹ thuật</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">125</td>
+                                <td class="px-6 py-4 whitespace-nowrap">18.5</td>
+                                <td class="px-6 py-4 whitespace-nowrap">4.2</td>
+                                <td class="px-6 py-4 whitespace-nowrap">2.8</td>
+                                <td class="px-6 py-4 whitespace-nowrap font-medium">3,187.5</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="font-medium text-gray-900">Kinh doanh</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">98</td>
+                                <td class="px-6 py-4 whitespace-nowrap">16.2</td>
+                                <td class="px-6 py-4 whitespace-nowrap">5.8</td>
+                                <td class="px-6 py-4 whitespace-nowrap">2.5</td>
+                                <td class="px-6 py-4 whitespace-nowrap font-medium">2,401.0</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="font-medium text-gray-900">Marketing</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">45</td>
+                                <td class="px-6 py-4 whitespace-nowrap">17.5</td>
+                                <td class="px-6 py-4 whitespace-nowrap">3.5</td>
+                                <td class="px-6 py-4 whitespace-nowrap">2.6</td>
+                                <td class="px-6 py-4 whitespace-nowrap font-medium">1,062.0</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="font-medium text-gray-900">Nhân sự</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">28</td>
+                                <td class="px-6 py-4 whitespace-nowrap">15.8</td>
+                                <td class="px-6 py-4 whitespace-nowrap">2.8</td>
+                                <td class="px-6 py-4 whitespace-nowrap">2.4</td>
+                                <td class="px-6 py-4 whitespace-nowrap font-medium">588.0</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="font-medium text-gray-900">Kế toán</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">22</td>
+                                <td class="px-6 py-4 whitespace-nowrap">14.8</td>
+                                <td class="px-6 py-4 whitespace-nowrap">2.2</td>
+                                <td class="px-6 py-4 whitespace-nowrap">2.2</td>
+                                <td class="px-6 py-4 whitespace-nowrap font-medium">422.4</td>
+                            </tr>
+                            <tr class="bg-gray-50">
+                                <td class="px-6 py-4 whitespace-nowrap font-medium">TỔNG</td>
+                                <td class="px-6 py-4 whitespace-nowrap font-medium">318</td>
+                                <td class="px-6 py-4 whitespace-nowrap font-medium">17.1</td>
+                                <td class="px-6 py-4 whitespace-nowrap font-medium">4.1</td>
+                                <td class="px-6 py-4 whitespace-nowrap font-medium">2.6</td>
+                                <td class="px-6 py-4 whitespace-nowrap font-medium">7,660.9</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Footer -->
+            <footer class="text-center text-gray-500 text-sm mt-8 pt-4 border-t border-gray-200">
+                <p>© 2023 HR Analytics Dashboard. Phiên bản 1.0.2</p>
+                <p class="mt-1">Được thiết kế bởi Genspark HR Analytics Team</p>
+            </footer>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Department Distribution Chart
+            const deptCtx = document.getElementById('departmentChart').getContext('2d');
+            const departmentChart = new Chart(deptCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['Kỹ thuật', 'Kinh doanh', 'Marketing', 'Nhân sự', 'Kế toán', 'Khác'],
+                    datasets: [{
+                        data: [125, 98, 45, 28, 22, 140],
+                        backgroundColor: [
+                            '#4f46e5',
+                            '#f97316',
+                            '#22c55e',
+                            '#ef4444',
+                            '#f59e0b',
+                            '#3b82f6'
+                        ],
+                        borderColor: 'white',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                boxWidth: 12,
+                                padding: 15
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.raw || 0;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = Math.round((value / total) * 100);
+                                    return `${label}: ${value} nhân viên (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Turnover Chart
+            const turnoverCtx = document.getElementById('turnoverChart').getContext('2d');
+            const turnoverChart = new Chart(turnoverCtx, {
+                type: 'line',
+                data: {
+                    labels: ['T1', 'T2', 'T3', 'T4', 'T5', 'T6'],
+                    datasets: [
+                        {
+                            label: 'Nhân sự mới',
+                            data: [22, 25, 18, 30, 26, 28],
+                            borderColor: '#4f46e5',
+                            backgroundColor: 'rgba(79, 70, 229, 0.1)',
+                            tension: 0.3,
+                            fill: true
+                        },
+                        {
+                            label: 'Nghỉ việc',
+                            data: [12, 10, 8, 14, 10, 15],
+                            borderColor: '#ef4444',
+                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                            tension: 0.3,
+                            fill: true
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                drawBorder: false
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                        }
+                    }
+                }
+            });
+            
+            // Performance Chart
+            const perfCtx = document.getElementById('performanceChart').getContext('2d');
+            const performanceChart = new Chart(perfCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Xuất sắc', 'Tốt', 'Đạt yêu cầu', 'Cần cải thiện', 'Không đạt'],
+                    datasets: [{
+                        data: [15, 35, 30, 15, 5],
+                        backgroundColor: [
+                            '#22c55e',
+                            '#4f46e5',
+                            '#f59e0b',
+                            '#fb923c',
+                            '#ef4444'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                boxWidth: 12,
+                                padding: 15
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.raw || 0;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = Math.round((value / total) * 100);
+                                    return `${label}: ${percentage}%`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Training Chart
+            const trainingCtx = document.getElementById('trainingChart').getContext('2d');
+            const trainingChart = new Chart(trainingCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Kỹ thuật', 'Kinh doanh', 'Marketing', 'Nhân sự', 'Kế toán'],
+                    datasets: [
+                        {
+                            label: 'Chi phí đào tạo (triệu đồng)',
+                            data: [45, 32, 28, 15, 5],
+                            backgroundColor: [
+                                'rgba(79, 70, 229, 0.8)',
+                                'rgba(249, 115, 22, 0.8)',
+                                'rgba(34, 197, 94, 0.8)',
+                                'rgba(239, 68, 68, 0.8)',
+                                'rgba(245, 158, 11, 0.8)'
+                            ],
+                            borderWidth: 0,
+                            borderRadius: 5
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                drawBorder: false
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return value + ' tr';
+                                }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finance Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8fafc;
+        }
+        .dashboard-card {
+            transition: all 0.3s ease;
+        }
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+        .bg-gradient-blue {
+            background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+        }
+        .bg-gradient-green {
+            background: linear-gradient(135deg, #10b981 0%, #065f46 100%);
+        }
+        .bg-gradient-purple {
+            background: linear-gradient(135deg, #8b5cf6 0%, #5b21b6 100%);
+        }
+        .bg-gradient-amber {
+            background: linear-gradient(135deg, #f59e0b 0%, #b45309 100%);
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Header with Navigation -->
+    <header class="bg-white shadow-md">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center">
+                    <i class="fas fa-chart-line text-blue-600 text-3xl mr-3"></i>
+                    <h1 class="text-2xl font-bold text-gray-800">FinancePro Dashboard</h1>
+                </div>
+                <nav class="hidden md:flex space-x-6">
+                    <a href="#" class="text-blue-600 font-medium">Dashboard</a>
+                    <a href="#" class="text-gray-600 hover:text-blue-600 transition duration-300">Reports</a>
+                    <a href="#" class="text-gray-600 hover:text-blue-600 transition duration-300">Budgets</a>
+                    <a href="#" class="text-gray-600 hover:text-blue-600 transition duration-300">Forecasting</a>
+                    <a href="#" class="text-gray-600 hover:text-blue-600 transition duration-300">Settings</a>
+                </nav>
+                <div class="flex items-center space-x-4">
+                    <button class="text-gray-600 hover:text-blue-600">
+                        <i class="fas fa-bell text-xl"></i>
+                    </button>
+                    <div class="h-8 w-8 bg-blue-600 rounded-full flex items-center justify-center text-white">
+                        <span>JP</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-6 py-8">
+        <!-- Welcome Section -->
+        <div class="mb-8">
+            <h2 class="text-2xl font-bold text-gray-800">Welcome to your Finance Dashboard</h2>
+            <p class="text-gray-600">Financial overview for the current fiscal year</p>
+        </div>
+
+        <!-- KPI Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="dashboard-card bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-sm text-gray-600 font-medium">Total Revenue</p>
+                        <h3 class="text-2xl font-bold text-gray-800 mt-1">$1,458,200</h3>
+                        <p class="text-sm text-green-600 mt-2">
+                            <i class="fas fa-arrow-up mr-1"></i>12.5% from last year
+                        </p>
+                    </div>
+                    <div class="bg-blue-100 p-3 rounded-full">
+                        <i class="fas fa-dollar-sign text-blue-600 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-card bg-white rounded-lg shadow-md p-6 border-l-4 border-green-500">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-sm text-gray-600 font-medium">Net Profit</p>
+                        <h3 class="text-2xl font-bold text-gray-800 mt-1">$425,680</h3>
+                        <p class="text-sm text-green-600 mt-2">
+                            <i class="fas fa-arrow-up mr-1"></i>8.3% from last year
+                        </p>
+                    </div>
+                    <div class="bg-green-100 p-3 rounded-full">
+                        <i class="fas fa-chart-line text-green-600 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-card bg-white rounded-lg shadow-md p-6 border-l-4 border-purple-500">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-sm text-gray-600 font-medium">Expenses</p>
+                        <h3 class="text-2xl font-bold text-gray-800 mt-1">$892,430</h3>
+                        <p class="text-sm text-red-600 mt-2">
+                            <i class="fas fa-arrow-up mr-1"></i>5.2% from last year
+                        </p>
+                    </div>
+                    <div class="bg-purple-100 p-3 rounded-full">
+                        <i class="fas fa-file-invoice-dollar text-purple-600 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-card bg-white rounded-lg shadow-md p-6 border-l-4 border-yellow-500">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-sm text-gray-600 font-medium">Cash Flow</p>
+                        <h3 class="text-2xl font-bold text-gray-800 mt-1">$325,750</h3>
+                        <p class="text-sm text-green-600 mt-2">
+                            <i class="fas fa-arrow-up mr-1"></i>7.8% from last year
+                        </p>
+                    </div>
+                    <div class="bg-yellow-100 p-3 rounded-full">
+                        <i class="fas fa-coins text-yellow-600 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Revenue vs Expenses</h3>
+                <div class="chart-container">
+                    <canvas id="revenueVsExpensesChart"></canvas>
+                </div>
+            </div>
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Profit Margin</h3>
+                <div class="chart-container">
+                    <canvas id="profitMarginChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Financial Breakdown -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+            <div class="bg-white rounded-lg shadow-md p-6 lg:col-span-2">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Revenue Breakdown by Category</h3>
+                <div class="chart-container" style="height: 350px;">
+                    <canvas id="revenueCategoryChart"></canvas>
+                </div>
+            </div>
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Expense Distribution</h3>
+                <div class="chart-container" style="height: 350px;">
+                    <canvas id="expenseDistributionChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Transactions -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold text-gray-800">Recent Transactions</h3>
+                <button class="text-blue-600 hover:text-blue-800 text-sm font-medium">View All</button>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Transaction ID</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">#TRX-2305</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Jun 15, 2023</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Sales</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Enterprise Software License</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-600">+$42,500</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Completed</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">#TRX-2304</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Jun 12, 2023</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Expenses</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Cloud Server Costs</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-red-600">-$8,750</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Completed</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">#TRX-2303</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Jun 10, 2023</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Sales</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Consulting Services</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-600">+$15,200</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Completed</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">#TRX-2302</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Jun 8, 2023</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Expenses</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Office Supplies</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-red-600">-$2,340</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Completed</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">#TRX-2301</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Jun 5, 2023</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Sales</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Software Subscription</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-600">+$9,800</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Pending</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Budget Summary -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Budget Summary</h3>
+            <div class="space-y-4">
+                <div>
+                    <div class="flex justify-between mb-1">
+                        <span class="text-sm font-medium text-gray-700">Marketing</span>
+                        <span class="text-sm font-medium text-gray-700">75% ($75,000/$100,000)</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2.5">
+                        <div class="bg-blue-600 h-2.5 rounded-full" style="width: 75%"></div>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex justify-between mb-1">
+                        <span class="text-sm font-medium text-gray-700">Research & Development</span>
+                        <span class="text-sm font-medium text-gray-700">45% ($90,000/$200,000)</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2.5">
+                        <div class="bg-green-500 h-2.5 rounded-full" style="width: 45%"></div>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex justify-between mb-1">
+                        <span class="text-sm font-medium text-gray-700">Operations</span>
+                        <span class="text-sm font-medium text-gray-700">90% ($135,000/$150,000)</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2.5">
+                        <div class="bg-amber-500 h-2.5 rounded-full" style="width: 90%"></div>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex justify-between mb-1">
+                        <span class="text-sm font-medium text-gray-700">IT Infrastructure</span>
+                        <span class="text-sm font-medium text-gray-700">60% ($48,000/$80,000)</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2.5">
+                        <div class="bg-purple-500 h-2.5 rounded-full" style="width: 60%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white py-6">
+        <div class="container mx-auto px-6">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-4 md:mb-0">
+                    <p class="text-sm text-gray-600">© 2023 FinancePro. All rights reserved.</p>
+                </div>
+                <div>
+                    <ul class="flex space-x-4">
+                        <li><a href="#" class="text-sm text-gray-600 hover:text-blue-600">Privacy Policy</a></li>
+                        <li><a href="#" class="text-sm text-gray-600 hover:text-blue-600">Terms of Service</a></li>
+                        <li><a href="#" class="text-sm text-gray-600 hover:text-blue-600">Contact Support</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Revenue vs Expenses Chart
+        const revenueExpenseCtx = document.getElementById('revenueVsExpensesChart').getContext('2d');
+        const revenueExpenseChart = new Chart(revenueExpenseCtx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                datasets: [
+                    {
+                        label: 'Revenue',
+                        data: [120000, 135000, 125000, 142000, 158000, 165000, 172000, 168000, 175000, 182000, 190000, 210000],
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        tension: 0.3,
+                        fill: true
+                    },
+                    {
+                        label: 'Expenses',
+                        data: [85000, 87000, 92000, 88000, 95000, 90000, 97000, 99000, 105000, 108000, 112000, 120000],
+                        borderColor: '#ef4444',
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        tension: 0.3,
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return '$' + value.toLocaleString();
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Profit Margin Chart
+        const profitMarginCtx = document.getElementById('profitMarginChart').getContext('2d');
+        const profitMarginChart = new Chart(profitMarginCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                datasets: [
+                    {
+                        label: 'Profit Margin (%)',
+                        data: [28, 31, 27, 32, 35, 37, 34, 33, 36, 39, 38, 41],
+                        backgroundColor: [
+                            'rgba(59, 130, 246, 0.7)',
+                            'rgba(16, 185, 129, 0.7)',
+                            'rgba(139, 92, 246, 0.7)',
+                            'rgba(245, 158, 11, 0.7)',
+                            'rgba(236, 72, 153, 0.7)',
+                            'rgba(37, 99, 235, 0.7)',
+                            'rgba(5, 150, 105, 0.7)',
+                            'rgba(124, 58, 237, 0.7)',
+                            'rgba(217, 119, 6, 0.7)',
+                            'rgba(220, 38, 38, 0.7)',
+                            'rgba(30, 64, 175, 0.7)',
+                            'rgba(4, 120, 87, 0.7)'
+                        ]
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `Profit Margin: ${context.parsed.y}%`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 50,
+                        ticks: {
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Revenue Category Chart
+        const revenueCategoryCtx = document.getElementById('revenueCategoryChart').getContext('2d');
+        const revenueCategoryChart = new Chart(revenueCategoryCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Software Licenses', 'Consulting Services', 'Support & Maintenance', 'Training', 'Cloud Services'],
+                datasets: [
+                    {
+                        label: 'Revenue',
+                        data: [520000, 320000, 240000, 150000, 228000],
+                        backgroundColor: [
+                            'rgba(59, 130, 246, 0.7)',
+                            'rgba(16, 185, 129, 0.7)',
+                            'rgba(139, 92, 246, 0.7)',
+                            'rgba(245, 158, 11, 0.7)',
+                            'rgba(236, 72, 153, 0.7)'
+                        ]
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let value = context.parsed.y;
+                                return `Revenue: $${value.toLocaleString()}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return '$' + value.toLocaleString();
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Expense Distribution Chart
+        const expenseDistributionCtx = document.getElementById('expenseDistributionChart').getContext('2d');
+        const expenseDistributionChart = new Chart(expenseDistributionCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Salaries', 'Marketing', 'R&D', 'Operations', 'IT Infrastructure'],
+                datasets: [
+                    {
+                        data: [450000, 120000, 180000, 95000, 47430],
+                        backgroundColor: [
+                            'rgba(59, 130, 246, 0.7)',
+                            'rgba(16, 185, 129, 0.7)',
+                            'rgba(139, 92, 246, 0.7)',
+                            'rgba(245, 158, 11, 0.7)',
+                            'rgba(236, 72, 153, 0.7)'
+                        ],
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: {
+                            boxWidth: 15
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let value = context.parsed;
+                                let total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                let percentage = Math.round((value / total) * 100);
+                                return `${context.label}: $${value.toLocaleString()} (${percentage}%)`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

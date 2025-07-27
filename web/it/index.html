@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IT Department Dashboard - ZKP Authenticated</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .status-online {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+    <!-- Header -->
+    <header class="gradient-bg text-white p-4 shadow-lg">
+        <div class="flex justify-between items-center">
+            <div class="flex items-center">
+                <i class="fas fa-shield-alt text-2xl mr-3"></i>
+                <h1 class="text-xl font-bold">IT Department Dashboard</h1>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="flex items-center bg-green-500 px-3 py-1 rounded-full text-sm">
+                    <i class="fas fa-check-circle mr-2"></i>
+                    ZKP Authenticated
+                </div>
+                <div class="flex items-center">
+                    <i class="fas fa-user-circle text-xl mr-2"></i>
+                    <span>IT Admin</span>
+                </div>
+                <button class="bg-red-500 hover:bg-red-600 px-4 py-2 rounded transition-colors">
+                    <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-white shadow-lg min-h-screen">
+            <nav class="p-4">
+                <ul class="space-y-2">
+                    <li><a href="#" class="flex items-center p-3 text-blue-600 bg-blue-50 rounded-lg"><i class="fas fa-tachometer-alt mr-3"></i>Dashboard</a></li>
+                    <li><a href="#" class="flex items-center p-3 text-gray-700 hover:bg-gray-100 rounded-lg"><i class="fas fa-server mr-3"></i>Server Management</a></li>
+                    <li><a href="#" class="flex items-center p-3 text-gray-700 hover:bg-gray-100 rounded-lg"><i class="fas fa-users mr-3"></i>User Management</a></li>
+                    <li><a href="#" class="flex items-center p-3 text-gray-700 hover:bg-gray-100 rounded-lg"><i class="fas fa-shield-alt mr-3"></i>Security Settings</a></li>
+                    <li><a href="#" class="flex items-center p-3 text-gray-700 hover:bg-gray-100 rounded-lg"><i class="fas fa-network-wired mr-3"></i>Network Monitor</a></li>
+                    <li><a href="#" class="flex items-center p-3 text-gray-700 hover:bg-gray-100 rounded-lg"><i class="fas fa-database mr-3"></i>Database</a></li>
+                    <li><a href="#" class="flex items-center p-3 text-gray-700 hover:bg-gray-100 rounded-lg"><i class="fas fa-bug mr-3"></i>System Logs</a></li>
+                    <li><a href="#" class="flex items-center p-3 text-gray-700 hover:bg-gray-100 rounded-lg"><i class="fas fa-cog mr-3"></i>Settings</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-6">
+            <!-- Welcome Section -->
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">Welcome to IT Department</h2>
+                <p class="text-gray-600">Zero-Knowledge Proof authentication successful. Access granted to IT systems.</p>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                <div class="bg-white p-6 rounded-lg shadow card-hover">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-500 text-sm">Active Servers</p>
+                            <p class="text-2xl font-bold text-green-600">24/26</p>
+                        </div>
+                        <div class="bg-green-100 p-3 rounded-full">
+                            <i class="fas fa-server text-green-600 text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <div class="flex items-center">
+                            <div class="status-online w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                            <span class="text-green-600 text-sm">All systems operational</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow card-hover">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-500 text-sm">Active Users</p>
+                            <p class="text-2xl font-bold text-blue-600">1,247</p>
+                        </div>
+                        <div class="bg-blue-100 p-3 rounded-full">
+                            <i class="fas fa-users text-blue-600 text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <span class="text-blue-600 text-sm">+12% from last week</span>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow card-hover">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-500 text-sm">Security Alerts</p>
+                            <p class="text-2xl font-bold text-orange-600">3</p>
+                        </div>
+                        <div class="bg-orange-100 p-3 rounded-full">
+                            <i class="fas fa-exclamation-triangle text-orange-600 text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <span class="text-orange-600 text-sm">Requires attention</span>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow card-hover">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-500 text-sm">System Uptime</p>
+                            <p class="text-2xl font-bold text-purple-600">99.9%</p>
+                        </div>
+                        <div class="bg-purple-100 p-3 rounded-full">
+                            <i class="fas fa-chart-line text-purple-600 text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <span class="text-purple-600 text-sm">Last 30 days</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions & Recent Activities -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Quick Actions -->
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <h3 class="text-lg font-semibold mb-4">Quick Actions</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <button class="bg-blue-500 hover:bg-blue-600 text-white p-4 rounded-lg transition-colors">
+                            <i class="fas fa-plus mb-2 text-xl"></i>
+                            <p class="text-sm">Add User</p>
+                        </button>
+                        <button class="bg-green-500 hover:bg-green-600 text-white p-4 rounded-lg transition-colors">
+                            <i class="fas fa-server mb-2 text-xl"></i>
+                            <p class="text-sm">Server Status</p>
+                        </button>
+                        <button class="bg-orange-500 hover:bg-orange-600 text-white p-4 rounded-lg transition-colors">
+                            <i class="fas fa-shield-alt mb-2 text-xl"></i>
+                            <p class="text-sm">Security Scan</p>
+                        </button>
+                        <button class="bg-purple-500 hover:bg-purple-600 text-white p-4 rounded-lg transition-colors">
+                            <i class="fas fa-download mb-2 text-xl"></i>
+                            <p class="text-sm">System Backup</p>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Recent Activities -->
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <h3 class="text-lg font-semibold mb-4">Recent Activities</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center p-3 bg-green-50 rounded-lg">
+                            <div class="bg-green-500 w-3 h-3 rounded-full mr-3"></div>
+                            <div class="flex-1">
+                                <p class="text-sm font-medium">Server Web-01 backup completed</p>
+                                <p class="text-xs text-gray-500">2 minutes ago</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center p-3 bg-blue-50 rounded-lg">
+                            <div class="bg-blue-500 w-3 h-3 rounded-full mr-3"></div>
+                            <div class="flex-1">
+                                <p class="text-sm font-medium">New user account created: john.doe@company.com</p>
+                                <p class="text-xs text-gray-500">15 minutes ago</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center p-3 bg-orange-50 rounded-lg">
+                            <div class="bg-orange-500 w-3 h-3 rounded-full mr-3"></div>
+                            <div class="flex-1">
+                                <p class="text-sm font-medium">Security alert: Failed login attempts detected</p>
+                                <p class="text-xs text-gray-500">1 hour ago</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center p-3 bg-purple-50 rounded-lg">
+                            <div class="bg-purple-500 w-3 h-3 rounded-full mr-3"></div>
+                            <div class="flex-1">
+                                <p class="text-sm font-medium">Database maintenance scheduled</p>
+                                <p class="text-xs text-gray-500">2 hours ago</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Status Table -->
+            <div class="mt-6 bg-white rounded-lg shadow overflow-hidden">
+                <div class="p-6">
+                    <h3 class="text-lg font-semibold mb-4">Server Status</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Server</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">CPU</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Memory</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Storage</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap font-medium">Web-01</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Online</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">45%</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">62%</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">78%</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <button class="text-blue-600 hover:text-blue-800 mr-2"><i class="fas fa-eye"></i></button>
+                                        <button class="text-green-600 hover:text-green-800 mr-2"><i class="fas fa-play"></i></button>
+                                        <button class="text-red-600 hover:text-red-800"><i class="fas fa-stop"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap font-medium">DB-01</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Online</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">32%</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">85%</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">92%</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <button class="text-blue-600 hover:text-blue-800 mr-2"><i class="fas fa-eye"></i></button>
+                                        <button class="text-green-600 hover:text-green-800 mr-2"><i class="fas fa-play"></i></button>
+                                        <button class="text-red-600 hover:text-red-800"><i class="fas fa-stop"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap font-medium">API-01</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-orange-100 text-orange-800">Maintenance</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">0%</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">0%</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">45%</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <button class="text-blue-600 hover:text-blue-800 mr-2"><i class="fas fa-eye"></i></button>
+                                        <button class="text-green-600 hover:text-green-800 mr-2"><i class="fas fa-play"></i></button>
+                                        <button class="text-red-600 hover:text-red-800"><i class="fas fa-stop"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Server Performance Chart
+        const serverCtx = document.getElementById('serverChart').getContext('2d');
+        new Chart(serverCtx, {
+            type: 'line',
+            data: {
+                labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00', '24:00'],
+                datasets: [{
+                    label: 'CPU Usage (%)',
+                    data: [45, 52, 48, 61, 55, 49, 45],
+                    borderColor: 'rgb(59, 130, 246)',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }, {
+                    label: 'Memory Usage (%)',
+                    data: [62, 65, 59, 72, 68, 64, 62],
+                    borderColor: 'rgb(16, 185, 129)',
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100
+                    }
+                }
+            }
+        });
+
+        // Network Traffic Chart
+        const networkCtx = document.getElementById('networkChart').getContext('2d');
+        new Chart(networkCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                datasets: [{
+                    label: 'Inbound (GB)',
+                    data: [245, 289, 312, 267, 298, 189, 156],
+                    backgroundColor: 'rgba(59, 130, 246, 0.8)'
+                }, {
+                    label: 'Outbound (GB)',
+                    data: [156, 178, 198, 145, 167, 123, 98],
+                    backgroundColor: 'rgba(16, 185, 129, 0.8)'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Real-time clock
+        function updateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString();
+            document.title = `IT Dashboard - ${timeString}`;
+        }
+
+        setInterval(updateTime, 1000);
+        updateTime();
+    </script>
+</body>
+</html>
