@@ -56,7 +56,8 @@ Follow these steps to set up the project locally:
 
 ## 🚀 Usage
 
-### Step 1: Generate Input JSON
+### Phase 1: Generate and Verify Proof
+1. **Generate Input JSON**:
 Run the Python script to create `input.json` for a user:
 ```bash
 python merkle/generate_input_json.py --email Rubies@it.company.com --secret alpha
@@ -81,7 +82,7 @@ Example `input.json`:
 }
 ```
 
-### Step 2: Compile the Circom Circuit
+2. **Compile the Circom Circuit**:
 Compile the circuit to generate R1CS and WASM files:
 ```bash
 circom circuits/merkle_proof.circom --r1cs --wasm --sym -o outputs/
@@ -91,19 +92,35 @@ This creates:
 - `main.wasm`: WebAssembly file for witness generation.
 - `main.sym`: Symbol file for debugging.
 
-### Step 3: Generate Witness
+3. **Generate Witness**:
 Generate a witness for the proof using `input.json`:
 ```bash
 node node outputs/merkle_proof_js/generate_witness.js outputs/merkle_proof_js/merkle_proof.wasm inputs/input.json outputs/witness.wtns
 ```
 
-### Step 4: Generate and Verify Proof
+4. **Generate and Verify Proof**
 *(To be implemented)*: Use a ZKP prover (e.g., snarkjs) to generate and verify the proof. Example steps:
 ```bash
 snarkjs groth16 setup main.r1cs powersOfTau28_hez_final_16.ptau main_zkp.zkey( I recommend build ptau by hand)
 snarkjs groth16 prove outputs/merkle_proof_final.zkey outputs/witness.wtns outputs/proof.json outputs/public.json
 snarkjs groth16 verify outputs/verification_key.json outputs/public.json outputs/proof.json
 ```
+
+### Phase 2: Run the Web Interface
+To interact with the proof system via a web interface:
+1. **Navigate to the Web Prover Directory** 🔄:
+   ```bash
+   cd web/prover
+   ```
+2. **Access the Web Interface** 🌐:
+   Open a browser (e.g., Google Chrome, Microsoft Edge) and visit:
+   ```plaintext
+   http://localhost:5000
+   ```
+3. **Enter Email and Secret** 📝:
+   Input your email and secret in the provided fields.
+4. **Check the Result** ✅:
+   The interface will display a message indicating whether the proof generation process succeeded or failed.
 
 ## 🧠 Theory Behind the Project
 
