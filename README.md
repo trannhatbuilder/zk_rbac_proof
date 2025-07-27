@@ -102,7 +102,9 @@ node node outputs/merkle_proof_js/generate_witness.js outputs/merkle_proof_js/me
 *(To be implemented)*: Use a ZKP prover (e.g., snarkjs) to generate and verify the proof. Example steps:
 ```bash
 snarkjs groth16 setup main.r1cs powersOfTau28_hez_final_16.ptau main_zkp.zkey( I recommend build ptau by hand)
+
 snarkjs groth16 prove outputs/merkle_proof_final.zkey outputs/witness.wtns outputs/proof.json outputs/public.json
+
 snarkjs groth16 verify outputs/verification_key.json outputs/public.json outputs/proof.json
 ```
 
